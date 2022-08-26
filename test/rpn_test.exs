@@ -14,7 +14,7 @@ defmodule RpnTest do
 
   test "add two numbers" do
     tokens = [{:number, 1.1}, {:operation, "+"}, {:number, 2}]
-    assert Rpn.rpn(tokens) === [{:number, 1.1}, {:number, 2}, {:operation, "+"}]
+    assert Rpn.rpn(tokens) === [ {:operation, "+"}, {:number, 2}, {:number, 1.1}]
   end
 
   test "and two conditions" do
@@ -24,9 +24,9 @@ defmodule RpnTest do
       {:number, 3.4}, {:operation, "=="}, {:number, 3.4}
     ]
     assert Rpn.rpn(tokens) === [
-      {:number, 1.4}, {:number, 2}, {:operation, "=="},
-      {:number, 3.4}, {:number, 3.4}, {:operation, "=="},
-      {:operation, "&&"}
+      {:operation, "&&"},
+      {:operation, "=="}, {:number, 3.4}, {:number, 3.4},
+      {:operation, "=="}, {:number, 2}, {:number, 1.4}
     ]
   end
 
@@ -37,9 +37,9 @@ defmodule RpnTest do
       {:open_parentheses, "("}, {:number, 5}, {:operation, "*"}, {:number, 7}, {:close_parentheses, ")"}
     ]
     assert Rpn.rpn(tokens) === [
-      {:number, 1}, {:number, 2}, {:operation, "+"},
-      {:number, 5}, {:number, 7}, {:operation, "*"},
-      {:operation, "-"}
+      {:operation, "-"},
+      {:operation, "*"}, {:number, 7}, {:number, 5},
+      {:operation, "+"}, {:number, 2}, {:number, 1}
     ]
   end
 
