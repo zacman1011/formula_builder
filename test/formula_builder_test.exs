@@ -14,6 +14,12 @@ defmodule FormulaBuilderTest do
     assert func.(%{"a" => 2}) == 2
   end
 
+  test "minus a number from another" do
+    func = FormulaBuilder.build_formula("5 - 2")
+
+    assert func.(%{}) == 3
+  end
+
   test "variable plus decimal" do
     func = FormulaBuilder.build_formula("a + 1.2")
 
@@ -30,6 +36,12 @@ defmodule FormulaBuilderTest do
     func = FormulaBuilder.build_formula("triad( a 2 1.2 )")
 
     assert func.(%{"a" => 2}) == 5.2
+  end
+
+  test "contract comparison" do
+    func = FormulaBuilder.build_formula("c1 - c2 < 50")
+
+    assert func.(%{"c1" => 80, "c2" => 50}) == true
   end
 
 end

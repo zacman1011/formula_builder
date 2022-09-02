@@ -18,7 +18,6 @@ defmodule FormulaBuilder.FunctionBuilder do
 
     func = &(Map.get(@operation_functions, op).(func1, func2, &1))
 
-    ##eval_rpn([{:built, func} | rem_tokens2])
     {func, rem_tokens2}
   end
   defp eval_rpn([{:function, function} | tokens]) do

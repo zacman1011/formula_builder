@@ -1,7 +1,7 @@
 defmodule FormulaBuilder.Operations do
 
   ## banned_operations ".", 0-9, any letter
-  @operations ["+", "-", "/", "*", "%", "//", "&&", "||", "==", "!="]
+  @operations ["+", "-", "/", "*", "%", "//", "&&", "||", "==", "!=", "<", ">", "<=", ">="]
 
   @operation_functions %{
     "+" => &FormulaBuilder.Operations.add/3,
@@ -13,7 +13,11 @@ defmodule FormulaBuilder.Operations do
     "&&" => &FormulaBuilder.Operations.and_func/3,
     "||" => &FormulaBuilder.Operations.or_func/3,
     "==" => &FormulaBuilder.Operations.equals_func/3,
-    "!=" => &FormulaBuilder.Operations.not_equals_func/3
+    "!=" => &FormulaBuilder.Operations.not_equals_func/3,
+    "<"  => &FormulaBuilder.Operations.less_than_func/3,
+    ">"  => &FormulaBuilder.Operations.more_than_func/3,
+    "<=" => &FormulaBuilder.Operations.less_than_equal_to_func/3,
+    ">=" => &FormulaBuilder.Operations.more_than_equal_to_func/3,
   }
 
   @operation_precedence %{
@@ -21,6 +25,10 @@ defmodule FormulaBuilder.Operations do
     "&&" => 1,
     "==" => 2,
     "!=" => 2,
+    "<"  => 2,
+    ">"  => 2,
+    "<=" => 2,
+    ">=" => 2,
     "%"  => 3,
     "+"  => 4,
     "-"  => 4,
@@ -51,5 +59,9 @@ defmodule FormulaBuilder.Operations do
   def or_func(a, b, map), do: a.(map) or b.(map)
   def equals_func(a, b, map), do: a.(map) == b.(map)
   def not_equals_func(a, b, map), do: a.(map) != b.(map)
+  def less_than_func(a, b, map), do: a.(map) > b.(map)
+  def more_than_func(a, b, map), do: a.(map) < b.(map)
+  def less_than_equal_to_func(a, b, map), do: a.(map) >= b.(map)
+  def more_than_equal_to_func(a, b, map), do: a.(map) <= b.(map)
 
 end

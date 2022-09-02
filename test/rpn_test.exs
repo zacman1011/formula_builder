@@ -14,7 +14,12 @@ defmodule RpnTest do
 
   test "add two numbers" do
     tokens = [{:number, 1.1}, {:operation, "+"}, {:number, 2}]
-    assert Rpn.rpn(tokens) === [ {:operation, "+"}, {:number, 2}, {:number, 1.1}]
+    assert Rpn.rpn(tokens) === [{:operation, "+"}, {:number, 2}, {:number, 1.1}]
+  end
+
+  test "minus a number from another" do
+    tokens = [{:number, 1.1}, {:operation, "-"}, {:number, 2}]
+    assert Rpn.rpn(tokens) === [{:operation, "-"}, {:number, 2}, {:number, 1.1}]
   end
 
   test "and two conditions" do
@@ -40,6 +45,20 @@ defmodule RpnTest do
       {:operation, "-"},
       {:operation, "*"}, {:number, 7}, {:number, 5},
       {:operation, "+"}, {:number, 2}, {:number, 1}
+    ]
+  end
+
+  test "contract comparison" do
+    tokens = [
+      {:variable, "c1"}, {:operation, "-"}, {:variable, "c2"},
+      {:operation, "<"},
+      {:number, 50}
+    ]
+
+    assert Rpn.rpn(tokens) === [
+      {:operation, "<"},
+      {:number, 50},
+      {:operation, "-"}, {:variable, "c2"}, {:variable, "c1"}
     ]
   end
 

@@ -4,16 +4,10 @@ defmodule FormulaBuilder.Tokeniser do
 
   @operations operations()
   @function_names function_names()
-  @allowed_characters [
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "_"
-  ]
 
   def build_tokens(formula_string) do
     case String.graphemes(formula_string) do
       [] -> nil
-      [single] -> single
       formula_graphemes -> interpret_graphemes(formula_graphemes, [])
     end
   end
@@ -53,14 +47,13 @@ defmodule FormulaBuilder.Tokeniser do
   end
 
   defp find_func_or_var([]), do: {"", []}
-  # defp find_func_or_var([token | tokens]) when token === "\s", do: {"", tokens}
-  # defp find_func_or_var([token | tokens]) when token in @operations, do: {"", [token | tokens]}
-  defp find_func_or_var([token | tokens]) when token in @allowed_characters do
-    {token_seq, rem_tokens} = find_func_or_var(tokens)
-    {token <> token_seq, rem_tokens}
-  end
-  defp find_func_or_var(tokens) do
-    {"", tokens}
+  defp find_func_or_var([token | tokens]) do
+    if token =~ ~r/[a-zA-Z0-9_]/ do
+      {token_seq, rem_tokens} = find_func_or_var(tokens)
+      {token <> token_seq, rem_tokens}
+    else
+      {"", [token | tokens]}
+    end
   end
 
   defp find_number(graphemes, number_start) do

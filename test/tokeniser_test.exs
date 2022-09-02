@@ -20,6 +20,12 @@ defmodule TokeniserTest do
     ]
   end
 
+  test "variable" do
+    assert Tokeniser.build_tokens("a") === [
+      {:variable, "a"}
+    ]
+  end
+
   test "add two numbers" do
     assert Tokeniser.build_tokens("1.1+2") === [
       {:number, 1.1}, {:operation, "+"}, {:number, 2}
@@ -75,6 +81,14 @@ defmodule TokeniserTest do
       {:open_parentheses, "("}, {:number, 1}, {:operation, "+"}, {:number, 2}, {:close_parentheses, ")"},
       {:operation, "-"},
       {:open_parentheses, "("}, {:number, 5}, {:operation, "*"}, {:number, 7}, {:close_parentheses, ")"}
+    ]
+  end
+
+  test "contract comparison" do
+    assert Tokeniser.build_tokens("c1 - c2 < 50") === [
+      {:variable, "c1"}, {:operation, "-"}, {:variable, "c2"},
+      {:operation, "<"},
+      {:number, 50}
     ]
   end
 
