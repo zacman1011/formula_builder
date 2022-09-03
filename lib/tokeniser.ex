@@ -5,10 +5,16 @@ defmodule FormulaBuilder.Tokeniser do
   @operations operations()
   @function_names function_names()
 
+  @whitespace ["\s", "\t", "\n"]
+
   def build_tokens(formula_string) do
     case String.graphemes(formula_string) do
       [] -> nil
-      formula_graphemes -> interpret_graphemes(formula_graphemes, [])
+      formula_graphemes ->
+        case interpret_graphemes(formula_graphemes, []) do
+          :error -> :error
+          tokens -> tokens
+        end
     end
   end
 
@@ -23,7 +29,25 @@ defmodule FormulaBuilder.Tokeniser do
       end
     end)
   end
-  defp interpret_graphemes(["\s" | tokens], acc), do: interpret_graphemes(tokens, acc)
+  defp interpret_graphemes([whitespace | tokens], acc) when whitespace in @whitespace, do: interpret_graphemes(tokens, acc)
+  defp interpret_graphemes(["i", "f", whitespace | tokens], acc) when whitespace in @whitespace do
+    case do_if_block(tokens) do
+      {:ok, {:if, _condition, _true_clause, _false_clause}=if_block, remaining} -> interpret_graphemes(remaining, [if_block | acc])
+      :error -> :error
+    end
+  end
+  defp interpret_graphemes(["d", "o", whitespace | tokens], acc) when whitespace in @whitespace do
+    {:do, tokens, acc}
+  end
+  defp interpret_graphemes(["e", "l", "s", "e", whitespace | tokens], acc) when whitespace in @whitespace do
+    {:else, tokens, acc}
+  end
+  defp interpret_graphemes(["e", "n", "d", whitespace | tokens], acc) when whitespace in @whitespace do
+    {:end, tokens, acc}
+  end
+  defp interpret_graphemes(["e", "n", "d"], acc) do
+    {:end, [], acc}
+  end
   defp interpret_graphemes([op | tokens], acc) when op in @operations, do: interpret_graphemes(tokens, [{:operation, op} | acc])
   defp interpret_graphemes([op1, op2 | tokens], acc) when (op1 <> op2) in @operations, do: interpret_graphemes(tokens, [{:operation, op1 <> op2} | acc])
   defp interpret_graphemes(["(" | tokens], acc), do: interpret_graphemes(tokens, [{:open_parentheses, "("} | acc])
@@ -91,6 +115,22 @@ defmodule FormulaBuilder.Tokeniser do
 
       _ ->
         false
+    end
+  end
+
+  defp do_if_block(tokens) do
+    case interpret_graphemes(tokens, []) do
+      :error -> :error
+      {:do, rem, condition} ->
+        case interpret_graphemes(rem, []) do
+          :error -> :error
+          {:else, rem, true_clause} ->
+            case interpret_graphemes(rem, []) do
+              :error -> :error
+              {:end, rem, false_clause} ->
+                {:ok, {:if, Enum.reverse(condition), Enum.reverse(true_clause), Enum.reverse(false_clause)}, rem}
+            end
+        end
     end
   end
 end

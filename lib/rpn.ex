@@ -4,6 +4,7 @@ defmodule FormulaBuilder.Rpn do
 
   @operation_precedence operation_precedence()
 
+  def rpn(:error), do: :error
   def rpn(tokens) do
     shunting(tokens, [], [])
   end
@@ -20,6 +21,12 @@ defmodule FormulaBuilder.Rpn do
   defp shunting([{:close_parentheses, _} | tokens], out, ops) do
     {new_out, new_ops} = shunt_close_brace(out, ops)
     shunting(tokens, new_out, new_ops)
+  end
+  defp shunting([{:if, condition, true_clause, false_clause} | tokens], out, ops) do
+    condition = shunting(condition, [], [])
+    true_clause = shunting(true_clause, [], [])
+    false_clause = shunting(false_clause, [], [])
+    shunting(tokens, [{:if, condition, true_clause, false_clause} | out], ops)
   end
   defp shunting([token | tokens], out, ops), do: shunting(tokens, [token | out], ops)
 

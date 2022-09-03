@@ -7,6 +7,7 @@ defmodule FormulaBuilder.FunctionBuilder do
   @functions functions()
   @function_arity function_arities()
 
+  def build_function(:error), do: :error
   def build_function(rpn_tokens) do
     {func, []} = eval_rpn(rpn_tokens)
     func
@@ -55,8 +56,22 @@ defmodule FormulaBuilder.FunctionBuilder do
     func = &(Map.get(&1, variable))
     {func, tokens}
   end
+  defp eval_rpn([{:if, condition, true_clause, false_clause} | tokens]) do
+    condition_func = build_function(condition)
+    true_clause_func = build_function(true_clause)
+    false_clause_func = build_function(false_clause)
+
+    func = &(FormulaBuilder.FunctionBuilder.if_block(condition_func, true_clause_func, false_clause_func, &1))
+    {func, tokens}
+  end
 
   def number(number, _), do: number
 
-
+  def if_block(condition, true_clause, false_clause, map) do
+    if condition.(map) do
+      true_clause.(map)
+    else
+      false_clause.(map)
+    end
+  end
 end

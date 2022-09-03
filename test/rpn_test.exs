@@ -62,4 +62,24 @@ defmodule RpnTest do
     ]
   end
 
+  test "if block simple" do
+    tokens = [
+      {
+        :if,
+        [{:variable, "true"}],
+        [{:variable, "c"}, {:operation, "+"}, {:number, 1}],
+        [{:variable, "d"}, {:operation, "+"}, {:number, 3}]
+      }
+    ]
+
+    assert Rpn.rpn(tokens) === [
+      {
+        :if,
+        [{:variable, "true"}],
+        [{:operation, "+"}, {:number, 1}, {:variable, "c"}],
+        [{:operation, "+"}, {:number, 3}, {:variable, "d"}]
+      }
+    ]
+  end
+
 end
