@@ -48,8 +48,8 @@ defmodule FormulaBuilder.Tokeniser do
   defp interpret_graphemes(["e", "n", "d"], acc) do
     {:end, [], acc}
   end
-  defp interpret_graphemes([op | tokens], acc) when op in @operations, do: interpret_graphemes(tokens, [{:operation, op} | acc])
   defp interpret_graphemes([op1, op2 | tokens], acc) when (op1 <> op2) in @operations, do: interpret_graphemes(tokens, [{:operation, op1 <> op2} | acc])
+  defp interpret_graphemes([op | tokens], acc) when op in @operations, do: interpret_graphemes(tokens, [{:operation, op} | acc])
   defp interpret_graphemes(["(" | tokens], acc), do: interpret_graphemes(tokens, [{:open_parentheses, "("} | acc])
   defp interpret_graphemes([")" | tokens], acc), do: interpret_graphemes(tokens, [{:close_parentheses, ")"} | acc])
   defp interpret_graphemes([next | tokens], acc) do

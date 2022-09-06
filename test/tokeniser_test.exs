@@ -92,6 +92,14 @@ defmodule TokeniserTest do
     ]
   end
 
+  test "contract comparison 2" do
+    assert Tokeniser.build_tokens("c1 - c2 <= 50") === [
+      {:variable, "c1"}, {:operation, "-"}, {:variable, "c2"},
+      {:operation, "<="},
+      {:number, 50}
+    ]
+  end
+
   test "if block simple" do
     assert Tokeniser.build_tokens("if true do c+1 else d + 3 end") === [
       {
