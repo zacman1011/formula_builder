@@ -1,12 +1,23 @@
 defmodule FormulaBuilder.Tokeniser do
+
   import FormulaBuilder.Operations
   import FormulaBuilder.Functions
+
+  alias FormulaBuilder.Types
+
+  @type token() :: Types.token()
 
   @operations operations()
   @function_names function_names()
 
   @whitespace ["\s", "\t", "\n"]
 
+  @doc """
+    Converts a string containing a formula into tokens that can be interpreted by the Rpn and FunctionBuilder modules
+
+    The token() type can be found in FormulaBuilder.Types
+  """
+  @spec build_tokens(String.t()) :: [token()] | :error
   def build_tokens(formula_string) do
     case String.graphemes(formula_string) do
       [] -> nil
@@ -50,8 +61,8 @@ defmodule FormulaBuilder.Tokeniser do
   end
   defp interpret_graphemes([op1, op2 | tokens], acc) when (op1 <> op2) in @operations, do: interpret_graphemes(tokens, [{:operation, op1 <> op2} | acc])
   defp interpret_graphemes([op | tokens], acc) when op in @operations, do: interpret_graphemes(tokens, [{:operation, op} | acc])
-  defp interpret_graphemes(["(" | tokens], acc), do: interpret_graphemes(tokens, [{:open_parentheses, "("} | acc])
-  defp interpret_graphemes([")" | tokens], acc), do: interpret_graphemes(tokens, [{:close_parentheses, ")"} | acc])
+  defp interpret_graphemes(["(" | tokens], acc), do: interpret_graphemes(tokens, [:open_parentheses | acc])
+  defp interpret_graphemes([")" | tokens], acc), do: interpret_graphemes(tokens, [:close_parentheses | acc])
   defp interpret_graphemes([next | tokens], acc) do
     if integer_grapheme?(next) do
       ## number

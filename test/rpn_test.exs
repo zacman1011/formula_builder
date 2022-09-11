@@ -37,9 +37,9 @@ defmodule RpnTest do
 
   test "parentheses - 1" do
     tokens = [
-      {:open_parentheses, "("}, {:number, 1}, {:operation, "+"}, {:number, 2}, {:close_parentheses, ")"},
+      :open_parentheses, {:number, 1}, {:operation, "+"}, {:number, 2}, :close_parentheses,
       {:operation, "-"},
-      {:open_parentheses, "("}, {:number, 5}, {:operation, "*"}, {:number, 7}, {:close_parentheses, ")"}
+      :open_parentheses, {:number, 5}, {:operation, "*"}, {:number, 7}, :close_parentheses
     ]
     assert Rpn.rpn(tokens) === [
       {:operation, "-"},

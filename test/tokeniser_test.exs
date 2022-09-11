@@ -46,7 +46,7 @@ defmodule TokeniserTest do
 
   test "add variables with parentheses" do
     assert Tokeniser.build_tokens("a+ (hello+world)") === [
-      {:variable, "a"}, {:operation, "+"}, {:open_parentheses, "("}, {:variable, "hello"}, {:operation, "+"}, {:variable, "world"}, {:close_parentheses, ")"}
+      {:variable, "a"}, {:operation, "+"}, :open_parentheses, {:variable, "hello"}, {:operation, "+"}, {:variable, "world"}, :close_parentheses
     ]
   end
 
@@ -58,13 +58,13 @@ defmodule TokeniserTest do
 
   test "func on variables and parentheses" do
     assert Tokeniser.build_tokens("min a (b + 1)") === [
-      {:function, "min"}, {:variable, "a"}, {:open_parentheses, "("}, {:variable, "b"}, {:operation, "+"}, {:number, 1}, {:close_parentheses, ")"}
+      {:function, "min"}, {:variable, "a"}, :open_parentheses, {:variable, "b"}, {:operation, "+"}, {:number, 1}, :close_parentheses
     ]
   end
 
   test "test" do
     assert Tokeniser.build_tokens("min 1 (a - 2)") === [
-      {:function, "min"}, {:number, 1}, {:open_parentheses, "("}, {:variable, "a"}, {:operation, "-"}, {:number, 2}, {:close_parentheses, ")"}
+      {:function, "min"}, {:number, 1}, :open_parentheses, {:variable, "a"}, {:operation, "-"}, {:number, 2}, :close_parentheses
     ]
   end
 
@@ -78,9 +78,9 @@ defmodule TokeniserTest do
 
   test "parentheses - 1" do
     assert Tokeniser.build_tokens("(1+2)-(5*7)") === [
-      {:open_parentheses, "("}, {:number, 1}, {:operation, "+"}, {:number, 2}, {:close_parentheses, ")"},
+      :open_parentheses, {:number, 1}, {:operation, "+"}, {:number, 2}, :close_parentheses,
       {:operation, "-"},
-      {:open_parentheses, "("}, {:number, 5}, {:operation, "*"}, {:number, 7}, {:close_parentheses, ")"}
+      :open_parentheses, {:number, 5}, {:operation, "*"}, {:number, 7}, :close_parentheses
     ]
   end
 

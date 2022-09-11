@@ -2,8 +2,17 @@ defmodule FormulaBuilder.Rpn do
 
   import FormulaBuilder.Operations
 
+  alias FormulaBuilder.Types
+
+  @type token() :: Types.token()
+
   @operation_precedence operation_precedence()
 
+  @doc """
+    Converts a list of tokens in infix order to prefix order
+  """
+  @spec rpn(:error | [token()]) :: :error | [token()]
+  def rpn(tokens)
   def rpn(:error), do: :error
   def rpn(tokens) do
     shunting(tokens, [], [])
@@ -17,8 +26,8 @@ defmodule FormulaBuilder.Rpn do
     {new_out, new_ops} = shunt_ops(token, out, ops)
     shunting(tokens, new_out, new_ops)
   end
-  defp shunting([{:open_parentheses, _}=token | tokens], out, ops), do: shunting(tokens, out, [token | ops])
-  defp shunting([{:close_parentheses, _} | tokens], out, ops) do
+  defp shunting([:open_parentheses = token | tokens], out, ops), do: shunting(tokens, out, [token | ops])
+  defp shunting([:close_parentheses | tokens], out, ops) do
     {new_out, new_ops} = shunt_close_brace(out, ops)
     shunting(tokens, new_out, new_ops)
   end
@@ -31,7 +40,7 @@ defmodule FormulaBuilder.Rpn do
   defp shunting([token | tokens], out, ops), do: shunting(tokens, [token | out], ops)
 
   defp shunt_ops(token, out, []), do: {out, [token]}
-  defp shunt_ops(token, out, [{:open_parentheses, _}=op | ops]), do: {out, [token, op | ops]}
+  defp shunt_ops(token, out, [:open_parentheses = op | ops]), do: {out, [token, op | ops]}
   defp shunt_ops(token, out, [op | ops]) do
     if comp_ops(token, op) do
       shunt_ops(token, [op | out], ops)
@@ -41,7 +50,7 @@ defmodule FormulaBuilder.Rpn do
   end
 
   defp shunt_close_brace(out, []), do: {out, []}
-  defp shunt_close_brace(out, [{:open_parentheses, _} | ops]) do
+  defp shunt_close_brace(out, [:open_parentheses | ops]) do
     case ops do
       [] ->
         {out, []}
@@ -57,7 +66,7 @@ defmodule FormulaBuilder.Rpn do
     shunt_close_brace([op | out], ops)
   end
 
-  defp comp_ops(_op1, {:open_parentheses, _}), do: false
+  defp comp_ops(_op1, :open_parentheses), do: false
   defp comp_ops(_op1, {:function, _function}), do: true
   defp comp_ops({:operation, op1}, {:operation, op2}), do: Map.get(@operation_precedence, op1) <= Map.get(@operation_precedence, op2)
 

@@ -3,10 +3,17 @@ defmodule FormulaBuilder.FunctionBuilder do
   import FormulaBuilder.Operations
   import FormulaBuilder.Functions
 
+  alias FormulaBuilder.Types
+
+  @type token() :: Types.token()
+  @type formula_function :: Types.formula_function()
+
   @operation_functions operation_functions()
   @functions functions()
   @function_arity function_arities()
 
+  @spec build_function(:error | [token()]) :: :error | formula_function()
+  def build_function(rpn_tokens)
   def build_function(:error), do: :error
   def build_function(rpn_tokens) do
     {func, []} = eval_rpn(rpn_tokens)
@@ -22,31 +29,8 @@ defmodule FormulaBuilder.FunctionBuilder do
     {func, rem_tokens2}
   end
   defp eval_rpn([{:function, function} | tokens]) do
-    case Map.get(@function_arity, function) do
-      1 ->
-        {func1, rem_tokens1} = eval_rpn(tokens)
-
-        func = &(Map.get(@functions, function).(func1, &1))
-
-        {func, rem_tokens1}
-
-      2 ->
-        {func1, rem_tokens1} = eval_rpn(tokens)
-        {func2, rem_tokens2} = eval_rpn(rem_tokens1)
-
-        func = &(Map.get(@functions, function).(func1, func2, &1))
-
-        {func, rem_tokens2}
-
-      3 ->
-        {func1, rem_tokens1} = eval_rpn(tokens)
-        {func2, rem_tokens2} = eval_rpn(rem_tokens1)
-        {func3, rem_tokens3} = eval_rpn(rem_tokens2)
-
-        func = &(Map.get(@functions, function).(func1, func2, func3, &1))
-
-        {func, rem_tokens3}
-    end
+    arity = Map.get(@function_arity, function)
+    build_inbuilt_function(arity, function, tokens)
   end
   defp eval_rpn([{:number, number} | tokens]) do
     func = &(FormulaBuilder.FunctionBuilder.number(number, &1))
@@ -73,5 +57,25 @@ defmodule FormulaBuilder.FunctionBuilder do
     else
       false_clause.(map)
     end
+  end
+
+  defp build_inbuilt_function(arity, function, tokens) do
+    {rem_tokens, functions} = do_build_inbuilt_function(arity, tokens, [])
+    functions = Enum.reverse(functions)
+
+    func = case arity do
+      1 -> &(Map.get(@functions, function).(Enum.at(functions, 0), &1))
+      2 -> &(Map.get(@functions, function).(Enum.at(functions, 0), Enum.at(functions, 1), &1))
+      3 -> &(Map.get(@functions, function).(Enum.at(functions, 0), Enum.at(functions, 1), Enum.at(functions, 2), &1))
+    end
+
+    {func, rem_tokens}
+  end
+
+  defp do_build_inbuilt_function(0, tokens, functions), do: {tokens, functions}
+  defp do_build_inbuilt_function(counter, tokens, functions) do
+    {func, rem_tokens} = eval_rpn(tokens)
+
+    do_build_inbuilt_function(counter-1, rem_tokens, [func | functions])
   end
 end
