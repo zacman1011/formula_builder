@@ -1,5 +1,24 @@
 defmodule FormulaBuilder.Functions do
 
+  @moduledoc """
+    Defines the functions available for formulae to have, and adds config defined functions. Allowing user defined functions when using this application as a dependency.
+    Every function can be used in the form ``` function_name (parameter1, parameter2) ```.
+    Functions can have 1-3 parameters.
+
+    The configuration function map passed in by a user must take the form
+    ```
+    %{
+      function_name => {arity, function_pointer}
+    }
+    ```
+
+    function_name :: String.t()
+    arity :: 0 | 1 | 2 | 3
+    function_pointer :: fun()
+
+    The function pointer should point to a function that takes 1-3 other function pointers as a
+  """
+
   alias FormulaBuilder.Types
 
   @type input_map :: Types.input_map()

@@ -9,7 +9,7 @@ defmodule FormulaBuilder.Types do
 
   @type input_map :: %{optional(String.t()) => any()}
 
-  @type formula_function_arity :: 1 | 2 | 3
+  @type formula_function_arity :: 0 | 1 | 2 | 3
 
   @type operation_precedence :: 0 | 1 | 2 | 3 | 4 | 5
 

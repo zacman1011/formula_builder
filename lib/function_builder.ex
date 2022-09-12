@@ -64,6 +64,7 @@ defmodule FormulaBuilder.FunctionBuilder do
     functions = Enum.reverse(functions)
 
     func = case arity do
+      0 -> &(Map.get(@functions, function).(&1))
       1 -> &(Map.get(@functions, function).(Enum.at(functions, 0), &1))
       2 -> &(Map.get(@functions, function).(Enum.at(functions, 0), Enum.at(functions, 1), &1))
       3 -> &(Map.get(@functions, function).(Enum.at(functions, 0), Enum.at(functions, 1), Enum.at(functions, 2), &1))
