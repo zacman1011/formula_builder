@@ -1,5 +1,9 @@
 defmodule FormulaBuilder.Tokeniser do
 
+  @moduledoc """
+    Responsible for taking a string containing a formula and converting it into a list of acceptable tokens.
+  """
+
   import FormulaBuilder.Operations
   import FormulaBuilder.Functions
 
@@ -70,6 +74,7 @@ defmodule FormulaBuilder.Tokeniser do
       interpret_graphemes(remaining, [{:number, number} | acc])
     else
       ## not a number
+      ## TODO: extra checks for if the variable is acceptable. Including checking "next"
       {token_seq, remaining} = find_func_or_var(tokens)
       token_seq = next <> token_seq
       result = if token_seq in @function_names do

@@ -1,5 +1,9 @@
 defmodule FormulaBuilder.Rpn do
 
+  @moduledoc """
+    Responsible for changing the functions from infix form to RPN form so that the function builder can understand them functionally
+  """
+
   import FormulaBuilder.Operations
 
   alias FormulaBuilder.Types
@@ -9,7 +13,7 @@ defmodule FormulaBuilder.Rpn do
   @operation_precedence operation_precedence()
 
   @doc """
-    Converts a list of tokens in infix order to prefix order
+    Converts a list of tokens in infix order to RPN
   """
   @spec rpn(:error | [token()]) :: :error | [token()]
   def rpn(tokens)

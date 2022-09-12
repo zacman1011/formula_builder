@@ -1,5 +1,9 @@
 defmodule FormulaBuilder.FunctionBuilder do
 
+  @moduledoc """
+    Responsible for turning a list of tokens in the RPN form into one function that takes a map of variables to values
+  """
+
   import FormulaBuilder.Operations
   import FormulaBuilder.Functions
 
@@ -12,6 +16,11 @@ defmodule FormulaBuilder.FunctionBuilder do
   @functions functions()
   @function_arity function_arities()
 
+  @doc """
+    Builds the function that takes a map of variables and returns a value.
+    Input is a list of tokens in RPN.
+    Output is a function pointer with arity 1.
+  """
   @spec build_function(:error | [token()]) :: :error | formula_function()
   def build_function(rpn_tokens)
   def build_function(:error), do: :error

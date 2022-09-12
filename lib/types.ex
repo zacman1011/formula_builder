@@ -1,5 +1,9 @@
 defmodule FormulaBuilder.Types do
 
+  @moduledoc """
+    Describes the custom types used in this project.
+  """
+
   @type token :: {:variable | :function | :operation, String.t()} |
                  {:number, Integer.t() | Float.t()}               |
                  :open_parentheses | :close_parentheses           |
