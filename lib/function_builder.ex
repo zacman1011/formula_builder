@@ -51,6 +51,7 @@ defmodule FormulaBuilder.FunctionBuilder do
 
   def number(number, _) when is_integer(number), do: Decimal.new(number)
   def number(number, _) when is_float(number), do: Decimal.from_float(number)
+  def number(number, _), do: number ## assuming Decimal.t()
 
   def variable(bool) when is_boolean(bool), do: bool
   def variable(number), do: number(number, nil)
