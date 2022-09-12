@@ -37,7 +37,7 @@ defmodule FormulaBuilder.FunctionBuilder do
     {func, tokens}
   end
   defp eval_rpn([{:variable, variable} | tokens]) do
-    func = &(Map.get(&1, variable))
+    func = &(Map.get(&1, variable) |> variable())
     {func, tokens}
   end
   defp eval_rpn([{:if, condition, true_clause, false_clause} | tokens]) do
@@ -49,7 +49,11 @@ defmodule FormulaBuilder.FunctionBuilder do
     {func, tokens}
   end
 
-  def number(number, _), do: number
+  def number(number, _) when is_integer(number), do: Decimal.new(number)
+  def number(number, _) when is_float(number), do: Decimal.from_float(number)
+
+  def variable(bool) when is_boolean(bool), do: bool
+  def variable(number), do: number(number, nil)
 
   def if_block(condition, true_clause, false_clause, map) do
     if condition.(map) do

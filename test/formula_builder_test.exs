@@ -5,37 +5,37 @@ defmodule FormulaBuilderTest do
   test "number -- integer" do
     func = FormulaBuilder.build_formula("1234")
 
-    assert func.(%{}) == 1234
+    assert func.(%{}) |> Decimal.compare(1234) == :eq
   end
 
   test "variable" do
     func = FormulaBuilder.build_formula("a")
 
-    assert func.(%{"a" => 2}) == 2
+    assert func.(%{"a" => 2}) |> Decimal.compare(2) == :eq
   end
 
   test "minus a number from another" do
     func = FormulaBuilder.build_formula("5 - 2")
 
-    assert func.(%{}) == 3
+    assert func.(%{}) |> Decimal.compare(3) == :eq
   end
 
   test "variable plus decimal" do
     func = FormulaBuilder.build_formula("a + 1.2")
 
-    assert func.(%{"a" => 2}) == 3.2
+    assert func.(%{"a" => 2}) |> Decimal.compare(Decimal.from_float(3.2)) == :eq
   end
 
   test "triad with variable and number and decimal" do
     func = FormulaBuilder.build_formula("triad a 2 1.2")
 
-    assert func.(%{"a" => 2}) == 5.2
+    assert func.(%{"a" => 2}) |> Decimal.compare(Decimal.from_float(5.2)) == :eq
   end
 
   test "triad with variable and number and decimal with function parentheses" do
     func = FormulaBuilder.build_formula("triad( a 2 1.2 )")
 
-    assert func.(%{"a" => 2}) == 5.2
+    assert func.(%{"a" => 2}) |> Decimal.compare(Decimal.from_float(5.2)) == :eq
   end
 
   test "contract comparison" do
@@ -47,8 +47,8 @@ defmodule FormulaBuilderTest do
   test "if block simple" do
     func = FormulaBuilder.build_formula("if cond do c+1 else d + 3 end")
 
-    assert func.(%{"cond" => true, "c" => 1, "d" => 10}) == 2
-    assert func.(%{"cond" => false, "c" => 1, "d" => 10}) == 13
+    assert func.(%{"cond" => true, "c" => 1, "d" => 10}) |> Decimal.compare(2) == :eq
+    assert func.(%{"cond" => false, "c" => 1, "d" => 10}) |> Decimal.compare(13) == :eq
   end
 
 end

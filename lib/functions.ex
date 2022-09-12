@@ -56,15 +56,15 @@ defmodule FormulaBuilder.Functions do
   end
 
   @spec min_func(formula_function(), formula_function(), input_map()) :: any
-  def min_func(a, b, map), do: min(a.(map), b.(map))
+  def min_func(a, b, map), do: Decimal.min(a.(map), b.(map))
 
   @spec max_func(formula_function(), formula_function(), input_map()) :: any
-  def max_func(a, b, map), do: max(a.(map), b.(map))
+  def max_func(a, b, map), do: Decimal.max(a.(map), b.(map))
 
   @spec not_func(formula_function(), input_map()) :: any
   def not_func(a, map), do: not a.(map)
 
   @spec triad_func(formula_function(), formula_function(), formula_function(), input_map()) :: any
-  def triad_func(a, b, c, map), do: a.(map) + b.(map) + c.(map)
+  def triad_func(a, b, c, map), do: Decimal.add(a.(map), b.(map)) |> Decimal.add(c.(map))
 
 end
