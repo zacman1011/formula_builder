@@ -6,6 +6,7 @@ defmodule FormulaBuilder.Types do
 
   @type token :: {:variable | :function | :operation, String.t()} |
                  {:number, Integer.t() | Float.t()}               |
+                 {:boolean, boolean()}                            |
                  :open_parentheses | :close_parentheses           |
                  {:if, [token()], [token()], [token()]}
 

@@ -14,6 +14,18 @@ defmodule FormulaBuilderTest do
     assert func.(%{"a" => 2}) |> Decimal.compare(2) == :eq
   end
 
+  test "boolean -- true" do
+    func = FormulaBuilder.build_formula("true")
+
+    assert func.(%{})
+  end
+
+  test "boolean -- false" do
+    func = FormulaBuilder.build_formula("false")
+
+    refute func.(%{})
+  end
+
   test "minus a number from another" do
     func = FormulaBuilder.build_formula("5 - 2")
 

@@ -104,7 +104,7 @@ defmodule TokeniserTest do
     assert Tokeniser.build_tokens("if true do c+1 else d + 3 end") === [
       {
         :if,
-        [{:variable, "true"}],
+        [{:boolean, true}],
         [{:variable, "c"}, {:operation, "+"}, {:number, 1}],
         [{:variable, "d"}, {:operation, "+"}, {:number, 3}]
       }
