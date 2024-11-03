@@ -8,14 +8,12 @@ defmodule FormulaBuilder.Rpn do
 
   alias FormulaBuilder.Types
 
-  @type token() :: Types.token()
-
   @operation_precedence operation_precedence()
 
   @doc """
     Converts a list of tokens in infix order to RPN
   """
-  @spec rpn(:error | [token()]) :: :error | [token()]
+  @spec rpn(:error | [Types.token()]) :: :error | [Types.token()]
   def rpn(tokens)
   def rpn(:error), do: :error
   def rpn(tokens) do
@@ -35,11 +33,15 @@ defmodule FormulaBuilder.Rpn do
     {new_out, new_ops} = shunt_close_brace(out, ops)
     shunting(tokens, new_out, new_ops)
   end
-  defp shunting([{:if, condition, true_clause, false_clause} | tokens], out, ops) do
+  defp shunting([{:tuple, elements} | tokens], out, ops) do
+    new_elements = rpn(elements)
+    shunting(tokens, [{:tuple, new_elements} | out], ops)
+  end
+  defp shunting([{:if, condition, true_clause, elifs_else} | tokens], out, ops) do
     condition = shunting(condition, [], [])
     true_clause = shunting(true_clause, [], [])
-    false_clause = shunting(false_clause, [], [])
-    shunting(tokens, [{:if, condition, true_clause, false_clause} | out], ops)
+    elifs_else = Enum.map(elifs_else, &(shunting(&1, [], [])))
+    shunting(tokens, [{:if, condition, true_clause, elifs_else} | out], ops)
   end
   defp shunting([token | tokens], out, ops), do: shunting(tokens, [token | out], ops)
 
@@ -70,9 +72,7 @@ defmodule FormulaBuilder.Rpn do
     shunt_close_brace([op | out], ops)
   end
 
-  defp comp_ops(_op1, :open_parentheses), do: false
   defp comp_ops(_op1, {:function, _function}), do: true
   defp comp_ops({:operation, op1}, {:operation, op2}), do: Map.get(@operation_precedence, op1) <= Map.get(@operation_precedence, op2)
-
 
 end

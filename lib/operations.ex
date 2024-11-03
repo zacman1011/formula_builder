@@ -7,10 +7,7 @@ defmodule FormulaBuilder.Operations do
 
   alias FormulaBuilder.Types
 
-  @type input_map :: Types.input_map()
-  @type formula_function :: Types.formula_function()
-  @type formula_function_arity :: Types.formula_function_arity()
-  @type operation_precedence :: Types.operation_precedence()
+  require Decimal
 
   ## banned_operations ".", 0-9, any letter
   @operation_definitions %{
@@ -36,17 +33,26 @@ defmodule FormulaBuilder.Operations do
 
   @operation_precedence Enum.into(@operation_definitions, %{}, fn({f, {arity, _}}) -> {f, arity} end)
 
+  @doc """
+    The names of the operations compiled and ready to be used in the formulae.
+  """
   @spec operations :: [String.t()]
   def operations do
     @operations
   end
 
-  @spec operation_functions :: %{optional(String.t()) => fun}
+  @doc """
+    The operations compiled and ready to be used in the formulae.
+  """
+  @spec operation_functions :: %{String.t() => fun()}
   def operation_functions do
     @operation_functions
   end
 
-  @spec operation_precedence :: %{optional(nonempty_binary) => operation_precedence()}
+  @doc """
+    The operations' precedences compiled and ready to be used in the formulae in a map with the form operation name to precedence.
+  """
+  @spec operation_precedence :: %{String.t() => Types.operation_precedence()}
   def operation_precedence do
     @operation_precedence
   end
@@ -58,41 +64,115 @@ defmodule FormulaBuilder.Operations do
   ##                                                 ##
   #####################################################
 
-  @spec add(formula_function(), formula_function(), input_map()) :: any
+  @doc """
+    Adds two Decimal parameters together
+
+    Formula representation: `+`
+  """
+  @spec add(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
   def add(a, b, map), do: Decimal.add(a.(map), b.(map))
 
-  @spec minus(formula_function(), formula_function(), input_map()) :: any
+  @doc """
+    Subtracts the second Decimal parameter from the first
+
+    Formula representation: `-`
+  """
+  @spec minus(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
   def minus(a, b, map), do: Decimal.sub(b.(map), a.(map))
 
-  @spec divide(formula_function(), formula_function(), input_map()) :: any
-  def divide(a, b, map), do: Decimal.div(a.(map), b.(map))
+  @doc """
+    Divides the second Decimal parameter from the first
 
-  @spec multiply(formula_function(), formula_function(), input_map()) :: any
+    Formula representation: `/`
+  """
+  @spec divide(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
+  def divide(a, b, map), do: Decimal.div(b.(map), a.(map))
+
+  @doc """
+    Multiplies two Decimal parameters together
+
+    Formula representation: `*`
+  """
+  @spec multiply(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
   def multiply(a, b, map), do: Decimal.mult(a.(map), b.(map))
 
-  @spec integer_divide(formula_function(), formula_function(), input_map()) :: any
-  def integer_divide(a, b, map), do: Decimal.div_int(a.(map), b.(map))
+  @doc """
+    Integer divides the second Decimal parameter from the first
 
-  @spec modulo(formula_function(), formula_function(), input_map()) :: any
-  def modulo(a, b, map), do: Decimal.rem(a.(map), b.(map))
+    Formula representation: `//`
+  """
+  @spec integer_divide(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
+  def integer_divide(a, b, map), do: Decimal.div_int(b.(map), a.(map))
 
-  @spec equals_func(formula_function(), formula_function(), input_map()) :: any
-  def equals_func(a, b, map), do: Decimal.compare(a.(map), b.(map)) == :eq
+  @doc """
+    Modulos (takes the remainder when dividing) the second Decimal parameter from the first
 
-  @spec not_equals_func(formula_function(), formula_function(), input_map()) :: any
-  def not_equals_func(a, b, map), do: Decimal.compare(a.(map), b.(map)) != :eq
+    Formula representation: `%`
+  """
+  @spec modulo(Types.formula_function(), Types.formula_function(), Types.input_map()) :: Decimal.t()
+  def modulo(a, b, map), do: Decimal.rem(b.(map), a.(map))
 
-  @spec less_than_func(formula_function(), formula_function(), input_map()) :: any
-  def less_than_func(a, b, map), do: Decimal.compare(b.(map), a.(map)) == :lt
+  @doc """
+    Compares two Decimal parameters and returns true if they are equal, false otherwise
 
-  @spec more_than_func(formula_function(), formula_function(), input_map()) :: any
-  def more_than_func(a, b, map), do: Decimal.compare(b.(map), a.(map)) == :gt
+    Formula representation: `==`
+  """
+  @spec equals_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def equals_func(a, b, map), do: eq?(a.(map), b.(map))
 
-  @spec less_than_equal_to_func(formula_function(), formula_function(), input_map()) :: any
-  def less_than_equal_to_func(a, b, map), do: Decimal.compare(b.(map), a.(map)) != :gt
+  defp eq?(a, b) when Decimal.is_decimal(a) and Decimal.is_decimal(b) do
+    Decimal.eq?(a, b)
+  end
+  defp eq?(a, b) do
+    a == b
+  end
 
-  @spec more_than_equal_to_func(formula_function(), formula_function(), input_map()) :: any
-  def more_than_equal_to_func(a, b, map), do: Decimal.compare(b.(map), a.(map)) != :lt
+  @doc """
+    Compares two Decimal parameters and returns true if they are not equal, false otherwise
+
+    Formula representation: `!=`
+  """
+  @spec not_equals_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def not_equals_func(a, b, map), do: neq?(a.(map), b.(map))
+
+  defp neq?(a, b) when Decimal.is_decimal(a) and Decimal.is_decimal(b) do
+    Decimal.neq?(a, b)
+  end
+  defp neq?(a, b) do
+    a != b
+  end
+
+  @doc """
+    Compares two Decimal parameters and returns true if the first is less than the second, false otherwise
+
+    Formula representation: `<`
+  """
+  @spec less_than_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def less_than_func(a, b, map), do: Decimal.lt?(b.(map), a.(map))
+
+  @doc """
+    Compares two Decimal parameters and returns true if the first is more than the second, false otherwise
+
+    Formula representation: `>`
+  """
+  @spec more_than_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def more_than_func(a, b, map), do: Decimal.gt?(b.(map), a.(map))
+
+  @doc """
+    Compares two Decimal parameters and returns true if the first is less than or equal to the second, false otherwise
+
+    Formula representation: `<=`
+  """
+  @spec less_than_equal_to_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def less_than_equal_to_func(a, b, map), do: Decimal.lte?(b.(map), a.(map))
+
+  @doc """
+    Compares two Decimal parameters and returns true if the first is more than or equal to the second, false otherwise
+
+    Formula representation: `>=`
+  """
+  @spec more_than_equal_to_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
+  def more_than_equal_to_func(a, b, map), do: Decimal.gte?(b.(map), a.(map))
 
   ####################################################
   ##                                                ##
@@ -100,10 +180,20 @@ defmodule FormulaBuilder.Operations do
   ##                                                ##
   ####################################################
 
-  @spec and_func(formula_function(), formula_function(), input_map()) :: any
+  @doc """
+    Runs the Elixir `and` on the two parameters and returns the result
+
+    Formula representation: `&&`
+  """
+  @spec and_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
   def and_func(a, b, map), do: a.(map) and b.(map)
 
-  @spec or_func(formula_function(), formula_function(), input_map()) :: any
+  @doc """
+    Runs the Elixir `or` on the two parameters and returns the result
+
+    Formula representation: `||`
+  """
+  @spec or_func(Types.formula_function(), Types.formula_function(), Types.input_map()) :: boolean()
   def or_func(a, b, map), do: a.(map) or b.(map)
 
 end

@@ -15,7 +15,7 @@ defmodule FormulaBuilder.MixProject do
       homepage_url: "http://YOUR_PROJECT_HOMEPAGE",
       docs: [
         main: "FormulaBuilder", # The main page in the docs
-        #logo: "path/to/logo.png", 
+        #logo: "path/to/logo.png",
         extras: ["README.md"]
       ]
     ]
@@ -31,7 +31,7 @@ defmodule FormulaBuilder.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:decimal, "~> 2.0"},
+      {:decimal, git: "git@github.com:zacman1011/decimal.git", branch: "neq"},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
