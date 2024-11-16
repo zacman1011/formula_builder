@@ -6,8 +6,6 @@ defmodule FormulaBuilder do
     Formulae made by this library will be returned as a function which takes a map as its sole argument. This map is to store the name of each variable in the formula to the value that should be used in the formula.
   """
 
-  require Logger
-
   alias FormulaBuilder.{Tokeniser, Rpn, FunctionBuilder, Types}
 
   @doc """

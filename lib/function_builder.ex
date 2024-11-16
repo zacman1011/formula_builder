@@ -167,14 +167,14 @@ defmodule FormulaBuilder.FunctionBuilder do
 
     rescue
       err ->
-        msg = "Formula has crashed: #{Exception.format(:error, err, __STACKTRACE__)} with map input: #{inspect map}."
-        Logger.error(msg)
+        "Formula has crashed: #{Exception.format(:error, err, __STACKTRACE__)} with map input: #{inspect map}."
+        |> Logger.error()
         false
 
     catch
       err ->
-        msg = "Formula has crashed: #{Exception.format(:error, err, __STACKTRACE__)} with map input: #{inspect map}."
-        Logger.error(msg)
+        "Formula has crashed: #{Exception.format(:error, err, __STACKTRACE__)} with map input: #{inspect map}."
+        |> Logger.error()
         false
     end
   end

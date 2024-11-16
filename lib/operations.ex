@@ -11,20 +11,20 @@ defmodule FormulaBuilder.Operations do
 
   ## banned_operations ".", 0-9, any letter
   @operation_definitions %{
-    "+"  => {4, &FormulaBuilder.Operations.add/3},
-    "-"  => {4, &FormulaBuilder.Operations.minus/3},
-    "/"  => {5, &FormulaBuilder.Operations.divide/3},
-    "*"  => {5, &FormulaBuilder.Operations.multiply/3},
-    "%"  => {3, &FormulaBuilder.Operations.modulo/3},
-    "//" => {5, &FormulaBuilder.Operations.integer_divide/3},
-    "==" => {2, &FormulaBuilder.Operations.equals_func/3},
-    "!=" => {2, &FormulaBuilder.Operations.not_equals_func/3},
-    "<"  => {2, &FormulaBuilder.Operations.less_than_func/3},
-    ">"  => {2, &FormulaBuilder.Operations.more_than_func/3},
-    "<=" => {2, &FormulaBuilder.Operations.less_than_equal_to_func/3},
-    ">=" => {2, &FormulaBuilder.Operations.more_than_equal_to_func/3},
-    "&&" => {1, &FormulaBuilder.Operations.and_func/3},
-    "||" => {0, &FormulaBuilder.Operations.or_func/3}
+    "+"  => {4, &__MODULE__.add/3},
+    "-"  => {4, &__MODULE__.minus/3},
+    "/"  => {5, &__MODULE__.divide/3},
+    "*"  => {5, &__MODULE__.multiply/3},
+    "%"  => {3, &__MODULE__.modulo/3},
+    "//" => {5, &__MODULE__.integer_divide/3},
+    "==" => {2, &__MODULE__.equals_func/3},
+    "!=" => {2, &__MODULE__.not_equals_func/3},
+    "<"  => {2, &__MODULE__.less_than_func/3},
+    ">"  => {2, &__MODULE__.more_than_func/3},
+    "<=" => {2, &__MODULE__.less_than_equal_to_func/3},
+    ">=" => {2, &__MODULE__.more_than_equal_to_func/3},
+    "&&" => {1, &__MODULE__.and_func/3},
+    "||" => {0, &__MODULE__.or_func/3}
   }
 
   @operations Map.keys(@operation_definitions)

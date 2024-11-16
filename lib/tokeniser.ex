@@ -35,7 +35,6 @@ defmodule FormulaBuilder.Tokeniser do
     end
   end
 
-
   defp interpret_graphemes([], tokens) do
     ## finished interpretation - reverse tokens due to accumulating nature
     Enum.reverse(tokens)
@@ -110,9 +109,6 @@ defmodule FormulaBuilder.Tokeniser do
   defp interpret_graphemes(["}" | tokens], acc) do
     {:close_tuple, tokens, acc}
   end
-  # defp interpret_graphemes(["," | tokens], acc) do
-  #   interpret_graphemes(tokens, [:comma | acc])
-  # end
   defp interpret_graphemes([":" | tokens], acc) do
     {token_seq, remaining} = find_func_or_var(tokens)
     try do

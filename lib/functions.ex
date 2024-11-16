@@ -24,21 +24,20 @@ defmodule FormulaBuilder.Functions do
   @config_functions Application.compile_env(:formula_builder, [FormulaBuilder.Functions, :functions], %{})
 
   @function_definitions %{
-    "min"   => {2, &FormulaBuilder.Functions.min_func/3},
-    "max"   => {2, &FormulaBuilder.Functions.max_func/3},
-    "min3"  => {3, &FormulaBuilder.Functions.min3_func/4},
-    "max3"  => {3, &FormulaBuilder.Functions.max3_func/4},
-    "not"   => {1, &FormulaBuilder.Functions.not_func/2},
-    "triad" => {3, &FormulaBuilder.Functions.triad_func/4},
-    "neg"   => {1, &FormulaBuilder.Functions.neg_func/2},
-    "abs"   => {1, &FormulaBuilder.Functions.abs_func/2}
+    "min"   => {2, &__MODULE__.min_func/3},
+    "max"   => {2, &__MODULE__.max_func/3},
+    "min3"  => {3, &__MODULE__.min3_func/4},
+    "max3"  => {3, &__MODULE__.max3_func/4},
+    "not"   => {1, &__MODULE__.not_func/2},
+    "triad" => {3, &__MODULE__.triad_func/4},
+    "neg"   => {1, &__MODULE__.neg_func/2},
+    "abs"   => {1, &__MODULE__.abs_func/2}
   } |> Map.merge(@config_functions)
 
   @function_names Map.keys(@function_definitions)
-
   @functions Enum.into(@function_definitions, %{}, fn({f, {_, func}}) -> {f, func} end)
-
   @function_arities Enum.into(@function_definitions, %{}, fn({f, {arity, _}}) -> {f, arity} end)
+
 
   @doc """
     The names of the functions compiled and ready to be used in the formulae.
