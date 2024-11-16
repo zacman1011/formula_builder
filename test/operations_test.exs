@@ -66,9 +66,10 @@ defmodule OperationsTest do
       refute Operations.equals_func(a, atom2, %{})
     end
 
-    test "not_equals", %{a: a, b: b} do
+    test "not_equals", %{a: a, b: b, atom1: atom1, atom2: atom2} do
       refute Operations.not_equals_func(a, a, %{})
       assert Operations.not_equals_func(a, b, %{})
+      assert Operations.not_equals_func(atom1, atom2, %{})
     end
 
     test "less_than", %{a: a, b: b} do
